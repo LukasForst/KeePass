@@ -25,6 +25,8 @@ public class SearchScreen {
     private JTextArea nameArea;
     private JTextArea passArea;
     private JButton searchButton;
+    private JScrollBar scrollBar1;
+    private JScrollBar scrollBar2;
 
     private DatabaseUtils utils;
 
@@ -33,12 +35,12 @@ public class SearchScreen {
 
         searchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                searchEntry();
+                searchInDatabase();
             }
         });
         searchField.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                searchEntry();
+                searchInDatabase();
             }
         });
     }
@@ -54,8 +56,27 @@ public class SearchScreen {
         searchButton.requestFocus();
     }
 
-    private void searchEntry() {
-        List<Entry> entries = utils.searchEntry(searchField.getText());
+    private void searchInDatabase() {
+        String search = searchField.getText();
+        if(search.startsWith("!g") || search.startsWith("!G")) {
+            searchGroups();
+        } else {
+            searchEntry(search);
+        }
+    }
+
+    private void searchGroups() {
+        List<Group> groups = utils.getGroups();
+        String groupsNames = "";
+
+        for(Group group : groups) {
+            groupsNames += group.getName() + "\n";
+            nameArea.setText(groupsNames);
+        }
+    }
+
+    private void searchEntry(String search) {
+        List<Entry> entries = utils.searchEntry(search);
 
         String userNames = "";
         String passWords = "";
