@@ -16,24 +16,30 @@ import java.util.List;
 
 
 public class DatabaseUtils {
+    public KeePassFile database;
 
     public KeePassFile open(String path, char[] password) {
-        return KeePassDatabase.getInstance(path).openDatabase(new String(password));
+        database = KeePassDatabase.getInstance(path).openDatabase(new String(password));
+        return database;
     }
 
-    public List<Group> getGroup(KeePassFile database) {
+    public List<Group> getGroups() {
         return database.getTopGroups();
     }
 
-    public List<Entry> getEntries(KeePassFile database) {
+    public List<Entry> getEntries() {
         return database.getEntries();
     }
 
+    public List<Entry> searchEntry(String searchPhrase) {
+        return database.getEntriesByTitle(searchPhrase, false);
+    }
 
     public void printDatabase(String path, char[] password) {
-        KeePassFile database = open(path, password);
-        List<Entry> entries = getEntries(database);
-        List<Group> groups = getGroup(database);
+        database = open(path, password);
+
+        List<Entry> entries = getEntries();
+        List<Group> groups = getGroups();
 
         for (Entry entry : entries) {
             System.out.println("Title: " + entry.getTitle() + " Password: " + entry.getPassword());

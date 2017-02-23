@@ -9,12 +9,12 @@
 package cz.cvut.fel.keepass;
 
 import javax.swing.*;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-public class startScreen {
+public class FileSelectionScreen {
+    private JFrame frame;
     private JButton openFileButton;
     private JPanel panel1;
     private JLabel informationLabel;
@@ -22,7 +22,7 @@ public class startScreen {
     private JPasswordField passwordField;
     private JButton findPathButton;
 
-    private startScreen() {
+    private FileSelectionScreen() {
         openFileButton.addActionListener(new ActionListener() { //opens whole keepass database
             public void actionPerformed(ActionEvent actionEvent) {
                 openKeepassDatabase();
@@ -40,47 +40,53 @@ public class startScreen {
             }
         });
 
-        passwordField.addActionListener(new AbstractAction() {
+        passwordField.addActionListener(new AbstractAction() { //opens database after Enter hit
             public void actionPerformed(ActionEvent actionEvent) {
-
+                openKeepassDatabase();
             }
         });
     }
 
-    private String getPath() { //returns main file path
-        String path = pathField.getText();
+    public static void start(){
+        FileSelectionScreen s = new FileSelectionScreen();
+        s.showWindow();
+    }
 
-        File f = new File(path);
-        if (!(f.exists() && !f.isDirectory())) {
-            JOptionPane.showMessageDialog(null, "You must enter the valid file!");
-        }
-        return path;
+    private void showWindow() {
+        frame = new JFrame("KeePass - Lukas Forst");
+        frame.setContentPane(new FileSelectionScreen().panel1);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLocationRelativeTo(null); //set location to the center of the screen
+        frame.setVisible(true);
+    }
+
+    private String getPath() { //returns main file path
+        return pathField.getText();
     }
 
     private char[] getPassword() {
         return passwordField.getPassword();
     }
 
-
     private void openKeepassDatabase() {
         String path = getPath();
         char[] password = getPassword();
 
+        File f = new File(path);
+        if (!(f.exists() && !f.isDirectory())) {
+            JOptionPane.showMessageDialog(null, "You must enter the valid file!");
+            return;
+        }
+
         DatabaseUtils utils = new DatabaseUtils();
+
         try {
-            utils.printDatabase(path, password);
+            utils.database = utils.open(path, password);
+            SearchScreen s = new SearchScreen(utils);
+            s.showWindow();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
-    }
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("KeePass - Lukas Forst");
-        frame.setContentPane(new startScreen().panel1);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400,300);
-        frame.setLocationRelativeTo(null); //set location to the center of the screen
-        frame.setVisible(true);
-
     }
 }
