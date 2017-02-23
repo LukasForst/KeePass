@@ -34,19 +34,4 @@ public class DatabaseUtils {
     public List<Entry> searchEntry(String searchPhrase) {
         return database.getEntriesByTitle(searchPhrase, false);
     }
-
-    public void printDatabase(String path, char[] password) {
-        database = open(path, password);
-
-        List<Entry> entries = getEntries();
-        List<Group> groups = getGroups();
-
-        for (Entry entry : entries) {
-            System.out.println("Title: " + entry.getTitle() + " Password: " + entry.getPassword());
-        }
-
-        for (Group group : groups) {
-            System.out.println(group.getName());
-        }
-    }
 }

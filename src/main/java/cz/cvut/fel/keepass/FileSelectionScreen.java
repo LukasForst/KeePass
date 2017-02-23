@@ -11,7 +11,10 @@ package cz.cvut.fel.keepass;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
 
 public class FileSelectionScreen {
     private JFrame frame;
@@ -22,7 +25,9 @@ public class FileSelectionScreen {
     private JPasswordField passwordField;
     private JButton findPathButton;
 
-    private FileSelectionScreen() {
+    private String favouriteFilePath = "favourite.txt";
+
+    public FileSelectionScreen() {
         openFileButton.addActionListener(new ActionListener() { //opens whole keepass database
             public void actionPerformed(ActionEvent actionEvent) {
                 openKeepassDatabase();
@@ -35,7 +40,6 @@ public class FileSelectionScreen {
                 jFileChooser.showOpenDialog(null);
 
                 pathField.setText(jFileChooser.getSelectedFile().getAbsolutePath()); //writes path to the field
-
                 passwordField.requestFocus();
             }
         });
@@ -45,20 +49,32 @@ public class FileSelectionScreen {
                 openKeepassDatabase();
             }
         });
+        getLastPath();
     }
 
-    public static void start(){
-        FileSelectionScreen s = new FileSelectionScreen();
-        s.showWindow();
-    }
-
-    private void showWindow() {
+    public void showWindow() {
         frame = new JFrame("KeePass - Lukas Forst");
         frame.setContentPane(new FileSelectionScreen().panel1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300);
         frame.setLocationRelativeTo(null); //set location to the center of the screen
         frame.setVisible(true);
+    }
+
+    private void getLastPath() {
+        try { //reading last
+            String path;
+            FileReader fileReader = new FileReader(favouriteFilePath);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            path = bufferedReader.readLine();
+            bufferedReader.close();
+
+            pathField.setText(path);
+            passwordField.requestFocus();
+
+        } catch (Exception e) {
+            pathField.setText("");
+        }
     }
 
     private String getPath() { //returns main file path
@@ -83,9 +99,25 @@ public class FileSelectionScreen {
 
         try {
             utils.database = utils.open(path, password);
+
+            PrintWriter writer = new PrintWriter(favouriteFilePath, "UTF-8");
+            writer.println(path);
+            writer.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            passwordField.setText("");
+            return;
+        }
+        startSearchWindow(utils);
+    }
+
+    private void startSearchWindow(DatabaseUtils utils) {
+        try {
             SearchScreen s = new SearchScreen(utils);
             s.showWindow();
-        } catch (Exception e) {
+
+            this.frame.setVisible(false); //TODO    not working yet
+        } catch(Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
     }

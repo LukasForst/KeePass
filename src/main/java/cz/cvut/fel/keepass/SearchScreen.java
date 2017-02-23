@@ -10,7 +10,6 @@ package cz.cvut.fel.keepass;
 
 import de.slackspace.openkeepass.domain.Entry;
 import de.slackspace.openkeepass.domain.Group;
-import de.slackspace.openkeepass.domain.KeePassFile;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -35,6 +34,11 @@ public class SearchScreen {
                 searchEntry();
             }
         });
+        searchField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                searchEntry();
+            }
+        });
     }
 
     public void showWindow() {
@@ -45,7 +49,7 @@ public class SearchScreen {
         frame.setLocationRelativeTo(null); //set location to the center of the screen
         frame.setVisible(true);
 
-        System.out.println("HI");
+        searchButton.requestFocus();
     }
 
     private void searchEntry() {

@@ -10,6 +10,7 @@ package cz.cvut.fel.keepass;
 
 public class Start {
     public static void main(String[] args) {
-        FileSelectionScreen.start();
+        FileSelectionScreen s = new FileSelectionScreen();
+        s.showWindow();
     }
 }
