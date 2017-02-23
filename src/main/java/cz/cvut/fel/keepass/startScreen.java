@@ -9,6 +9,7 @@
 package cz.cvut.fel.keepass;
 
 import javax.swing.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -47,8 +48,11 @@ public class startScreen {
             public void actionPerformed(ActionEvent actionEvent) {
                 JFileChooser jFileChooser = new JFileChooser();
                 jFileChooser.showOpenDialog(null);
+
                 keepassDatabasePath = jFileChooser.getSelectedFile().getAbsolutePath();
+
                 pathField.setText(keepassDatabasePath);
+
                 passwordField.requestFocus();
             }
         });
@@ -68,7 +72,7 @@ public class startScreen {
         frame.setContentPane(new startScreen().panel1);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400,300);
-        frame.setLocationRelativeTo(null);
+        frame.setLocationRelativeTo(null); //set location to the center of the screen
         frame.setVisible(true);
 
     }
