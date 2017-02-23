@@ -15,6 +15,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.awt.datatransfer.*;
+import java.awt.Toolkit;
 
 public class SearchScreen {
     private JFrame frame;
@@ -65,5 +67,12 @@ public class SearchScreen {
             nameArea.setText(userNames);
             passArea.setText(passWords);
         }
+    }
+
+    private void copyToClipboard(String text) {
+        StringSelection stringSelection = new StringSelection(text);
+        Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clip.setContents(stringSelection, null);
+
     }
 }
