@@ -1,3 +1,4 @@
+
 /*
  *  File name:  searchScreen
  *  Date:       23.2.17
@@ -19,30 +20,17 @@ import java.awt.datatransfer.*;
 import java.awt.Toolkit;
 
 public class SearchScreen {
-    private JFrame frame;
+    private static JFrame frame;
     private JTextField searchField;
     private JPanel panel;
-    private JTextArea nameArea;
-    private JTextArea passArea;
-    private JButton searchButton;
-    private JScrollBar scrollBar1;
-    private JScrollBar scrollBar2;
+    private JTree databaseStructureTree;
+    private JList entriesList;
 
     private DatabaseUtils utils;
 
     public SearchScreen(DatabaseUtils ut) {
         utils = ut;
-
-        searchButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                searchInDatabase();
-            }
-        });
-        searchField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                searchInDatabase();
-            }
-        });
+        prepareGUI();
     }
 
     public void showWindow() {
@@ -53,7 +41,15 @@ public class SearchScreen {
         frame.setLocationRelativeTo(null); //set location to the center of the screen
         frame.setVisible(true);
 
-        searchButton.requestFocus();
+        searchField.requestFocus();
+    }
+
+    private void prepareGUI(){
+        searchField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                searchInDatabase();
+            }
+        });
     }
 
     private void searchInDatabase() {
@@ -69,9 +65,11 @@ public class SearchScreen {
         List<Group> groups = utils.getGroups();
         String groupsNames = "";
 
+
         for(Group group : groups) {
             groupsNames += group.getName() + "\n";
-            nameArea.setText(groupsNames);
+            //databaseStructureTree
+            //TODO every entry
         }
     }
 
@@ -79,14 +77,13 @@ public class SearchScreen {
         List<Entry> entries = utils.searchEntry(search);
 
         String userNames = "";
-        String passWords = "";
-
-        for(Entry entry : entries) {
-            userNames += entry.getUsername() + "\n";
-            passWords += entry.getPassword() + "\n";
-
-            nameArea.setText(userNames);
-            passArea.setText(passWords);
+        if(entries.isEmpty()) {
+            //Todo no entry
+        } else {
+            for(Entry entry : entries) {
+                userNames += entry.getUsername() + "\n";
+                //TODO add entry
+            }
         }
     }
 

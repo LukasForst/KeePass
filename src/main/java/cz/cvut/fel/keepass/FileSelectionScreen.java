@@ -121,6 +121,7 @@ public class FileSelectionScreen {
             frame.setVisible(false);
             frame.dispose();
             frame = null;
+
             SearchScreen s = new SearchScreen(utils);
             s.showWindow();
         } catch(Exception e) {
