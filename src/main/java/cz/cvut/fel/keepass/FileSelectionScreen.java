@@ -17,7 +17,7 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 
 public class FileSelectionScreen {
-    private JFrame frame;
+    private static JFrame frame;
     private JButton openFileButton;
     private JPanel panel1;
     private JLabel informationLabel;
@@ -28,6 +28,21 @@ public class FileSelectionScreen {
     private String favouriteFilePath = "favourite.txt";
 
     public FileSelectionScreen() {
+        prepareGUI();
+        getLastPath();
+    }
+
+    public void showWindow() {
+        frame = new JFrame("KeePass - Lukas Forst");
+        frame.setContentPane(new FileSelectionScreen().panel1);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLocationRelativeTo(null); //set location to the center of the screen
+
+        frame.setVisible(true);
+    }
+
+    private void prepareGUI() {
         openFileButton.addActionListener(new ActionListener() { //opens whole keepass database
             public void actionPerformed(ActionEvent actionEvent) {
                 openKeepassDatabase();
@@ -49,16 +64,6 @@ public class FileSelectionScreen {
                 openKeepassDatabase();
             }
         });
-        getLastPath();
-    }
-
-    public void showWindow() {
-        frame = new JFrame("KeePass - Lukas Forst");
-        frame.setContentPane(new FileSelectionScreen().panel1);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLocationRelativeTo(null); //set location to the center of the screen
-        frame.setVisible(true);
     }
 
     private void getLastPath() {
@@ -113,10 +118,11 @@ public class FileSelectionScreen {
 
     private void startSearchWindow(DatabaseUtils utils) {
         try {
+            frame.setVisible(false);
+            frame.dispose();
+            frame = null;
             SearchScreen s = new SearchScreen(utils);
             s.showWindow();
-
-            this.frame.setVisible(false); //TODO    not working yet
         } catch(Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
