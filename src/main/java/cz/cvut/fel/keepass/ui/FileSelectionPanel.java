@@ -9,6 +9,7 @@
 package cz.cvut.fel.keepass.ui;
 
 import cz.cvut.fel.keepass.DatabaseUtils;
+import de.slackspace.openkeepass.domain.KeePassFile;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -19,9 +20,11 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 
 public class FileSelectionPanel {
-    public JPanel fileSelectionPanel;
+    public JPanel panel;
+
     JPasswordField passwordField;
     JButton openFileButton;
+
     private JTextField pathField;
     private JLabel informationLabel;
     private JButton findPathButton;
@@ -68,14 +71,14 @@ public class FileSelectionPanel {
         return passwordField.getPassword();
     }
 
-    void openKeepassDatabase() {
+    KeePassFile openKeepassDatabase() {
         String path = getPath();
         char[] password = getPassword();
 
         File f = new File(path);
         if (!(f.exists() && !f.isDirectory())) {
             JOptionPane.showMessageDialog(null, "You must enter the valid file!");
-            return;
+            return null;
         }
 
         DatabaseUtils utils = new DatabaseUtils();
@@ -90,5 +93,7 @@ public class FileSelectionPanel {
             JOptionPane.showMessageDialog(null, e.getMessage());
             passwordField.setText("");
         }
+
+        return utils.database;
     }
 }

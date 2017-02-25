@@ -1,60 +1,53 @@
-
 /*
- *  File name:  searchScreen
- *  Date:       23.2.17
+ *  File name:  SearchPanel
+ *  Date:       25.2.17
  *  Author:     Lukas Forst
- *  Package:    cz.cvut.fel.keepass
+ *  Package:    cz.cvut.fel.keepass.ui
  *  Project:    KeePass
  */
 
-package cz.cvut.fel.keepass;
+package cz.cvut.fel.keepass.ui;
 
+import cz.cvut.fel.keepass.DatabaseUtils;
 import de.slackspace.openkeepass.domain.Entry;
 import de.slackspace.openkeepass.domain.Group;
+import de.slackspace.openkeepass.domain.KeePassFile;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.List;
-import java.awt.datatransfer.*;
-import java.awt.Toolkit;
 
-public class SearchScreen {
-    private static JFrame frame;
+public class SearchPanel {
+    private static DatabaseUtils utils = new DatabaseUtils();
+    public JPanel panel;
+    KeePassFile database;
     private JTextField searchField;
-    private JPanel panel;
-    private JTree databaseStructureTree;
     private JList entriesList;
+    private JTree groupsTree;
+    private JButton button1;
 
-    private DatabaseUtils utils;
+    public SearchPanel() {
 
-    public SearchScreen(DatabaseUtils ut) {
-        utils = ut;
-        prepareGUI();
     }
 
-    public void showWindow() {
-        frame = new JFrame("KeePass");
-        frame.setContentPane(new SearchScreen(utils).panel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 300);
-        frame.setLocationRelativeTo(null); //set location to the center of the screen
-        frame.setVisible(true);
-
-        searchField.requestFocus();
-    }
-
-    private void prepareGUI(){
-        searchField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                searchInDatabase();
+    private boolean isValid() {
+        if (utils.database == null) {
+            if (database == null) {
+                return false;
+            } else {
+                utils.database = database;
+                return true;
             }
-        });
+        } else {
+            return true;
+        }
     }
 
     private void searchInDatabase() {
         String search = searchField.getText();
-        if(search.startsWith("!g") || search.startsWith("!G")) {
+        if (search.startsWith("!g") || search.startsWith("!G")) {
             searchGroups();
         } else {
             searchEntry(search);
@@ -62,11 +55,15 @@ public class SearchScreen {
     }
 
     private void searchGroups() {
+        if (!isValid()) {
+            return;
+        }
+
         List<Group> groups = utils.getGroups();
         String groupsNames = "";
 
 
-        for(Group group : groups) {
+        for (Group group : groups) {
             groupsNames += group.getName() + "\n";
             //databaseStructureTree
             //TODO every entry
@@ -74,13 +71,18 @@ public class SearchScreen {
     }
 
     private void searchEntry(String search) {
+        if (!isValid()) {
+            return;
+        }
+
         List<Entry> entries = utils.searchEntry(search);
 
         String userNames = "";
-        if(entries.isEmpty()) {
+
+        if (entries.isEmpty()) {
             //Todo no entry
         } else {
-            for(Entry entry : entries) {
+            for (Entry entry : entries) {
                 userNames += entry.getUsername() + "\n";
                 //TODO add entry
             }
@@ -93,4 +95,5 @@ public class SearchScreen {
         clip.setContents(stringSelection, null);
 
     }
+
 }

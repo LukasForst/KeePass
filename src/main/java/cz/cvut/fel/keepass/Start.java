@@ -14,9 +14,11 @@ import java.awt.*;
 
 public class Start {
     public static void main(String[] args) {
+/*
         DatabaseUtils u = new DatabaseUtils();
         char[] pass = {'A', 'h', 'o', 'j', '1', '2', '3'};
         u.open("/home/lukas/GITS/test.kdbx",pass);
+*/
 
 
         EventQueue.invokeLater(new Runnable() {
