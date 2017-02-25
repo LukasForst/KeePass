@@ -1,12 +1,14 @@
 /*
- *  File name:  startScreen.java
- *  Date:       23.2.17
+ *  File name:  testScreen
+ *  Date:       25.2.17
  *  Author:     Lukas Forst
- *  Package:    cz.cvut.fel.keepass
+ *  Package:    cz.cvut.fel.keepass.ui
  *  Project:    KeePass
  */
 
-package cz.cvut.fel.keepass;
+package cz.cvut.fel.keepass.ui;
+
+import cz.cvut.fel.keepass.DatabaseUtils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,40 +18,30 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 
-public class FileSelectionScreen {
-    private static JFrame frame;
-    private JButton openFileButton;
-    private JPanel panel1;
-    private JLabel informationLabel;
+public class FileSelectionPanel {
+    public JPanel fileSelectionPanel;
     private JTextField pathField;
     private JPasswordField passwordField;
+    private JLabel informationLabel;
+    private JButton openFileButton;
     private JButton findPathButton;
 
-    private String favouriteFilePath = "favourite.txt";
+    private String favouriteFilePath = "fav.txt";
 
-    public FileSelectionScreen() {
-        prepareGUI();
-        getLastPath();
-    }
+    public FileSelectionPanel() {
 
-    public void showWindow() {
-        frame = new JFrame("KeePass - Lukas Forst");
-        frame.setContentPane(new FileSelectionScreen().panel1);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.setLocationRelativeTo(null); //set location to the center of the screen
-
-        frame.setVisible(true);
-    }
-
-    private void prepareGUI() {
-        openFileButton.addActionListener(new ActionListener() { //opens whole keepass database
+        Action startSearch = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 openKeepassDatabase();
             }
-        });
+        };
 
-        findPathButton.addActionListener(new ActionListener() { //opens jFileChooser
+        passwordField.addActionListener(startSearch);
+        openFileButton.addActionListener(startSearch);
+
+        findPathButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 JFileChooser jFileChooser = new JFileChooser();
                 jFileChooser.showOpenDialog(null);
@@ -59,11 +51,7 @@ public class FileSelectionScreen {
             }
         });
 
-        passwordField.addActionListener(new AbstractAction() { //opens database after Enter hit
-            public void actionPerformed(ActionEvent actionEvent) {
-                openKeepassDatabase();
-            }
-        });
+        getLastPath();
     }
 
     private void getLastPath() {
@@ -75,6 +63,7 @@ public class FileSelectionScreen {
             bufferedReader.close();
 
             pathField.setText(path);
+            favouriteFilePath = path;
             passwordField.requestFocus();
 
         } catch (Exception e) {
@@ -111,21 +100,6 @@ public class FileSelectionScreen {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
             passwordField.setText("");
-            return;
-        }
-        startSearchWindow(utils);
-    }
-
-    private void startSearchWindow(DatabaseUtils utils) {
-        try {
-            frame.setVisible(false);
-            frame.dispose();
-            frame = null;
-
-            SearchScreen s = new SearchScreen(utils);
-            s.showWindow();
-        } catch(Exception e) {
-            JOptionPane.showMessageDialog(null, e);
         }
     }
 }

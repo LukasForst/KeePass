@@ -15,7 +15,7 @@ import java.awt.event.ActionListener;
 
 public class MainGUI{
     private JFrame mainFrame = new JFrame();
-    private JPanel cardPanel, searchScreen, fileSelectionScreen;
+    private JPanel cardPanel, searchScreen;
     private CardLayout cardLayout = new CardLayout();
 
     private JLabel l1, l2;
@@ -29,15 +29,12 @@ public class MainGUI{
         cardPanel = new JPanel();
         cardPanel.setLayout(cardLayout);
         searchScreen = new JPanel();
-        fileSelectionScreen = new JPanel();
 
         l1 = new JLabel("Search Screen");
-        l2 = new JLabel("File Screen");
 
         searchScreen.add(l1);
-        fileSelectionScreen.add(l2);
 
-        cardPanel.add(fileSelectionScreen, "fileSelection");
+        cardPanel.add(new FileSelectionPanel().fileSelectionPanel, "fileSelection");
         cardPanel.add(searchScreen, "searchScreen");
 
         changePanelButton = new JButton("Change panel");
@@ -48,8 +45,6 @@ public class MainGUI{
                 mainFrame.setSize(500,500);
             }
         });
-
-        fileSelectionScreen.add(changePanelButton);
 
         mainFrame.add(cardPanel);
         mainFrame.pack();
