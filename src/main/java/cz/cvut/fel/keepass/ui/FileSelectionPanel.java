@@ -1,5 +1,5 @@
 /*
- *  File name:  testScreen
+ *  File name:  FileSelectionPanel
  *  Date:       25.2.17
  *  Author:     Lukas Forst
  *  Package:    cz.cvut.fel.keepass.ui
@@ -20,26 +20,15 @@ import java.io.PrintWriter;
 
 public class FileSelectionPanel {
     public JPanel fileSelectionPanel;
+    JPasswordField passwordField;
+    JButton openFileButton;
     private JTextField pathField;
-    private JPasswordField passwordField;
     private JLabel informationLabel;
-    private JButton openFileButton;
     private JButton findPathButton;
 
-    private String favouriteFilePath = "fav.txt";
+    private String favouriteFilePath = "fav";   //path where is stored favourite file path
 
     public FileSelectionPanel() {
-
-        Action startSearch = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                openKeepassDatabase();
-            }
-        };
-
-        passwordField.addActionListener(startSearch);
-        openFileButton.addActionListener(startSearch);
-
         findPathButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -55,7 +44,7 @@ public class FileSelectionPanel {
     }
 
     private void getLastPath() {
-        try { //reading last
+        try { //reading last used path to the kdbx file
             String path;
             FileReader fileReader = new FileReader(favouriteFilePath);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -79,7 +68,7 @@ public class FileSelectionPanel {
         return passwordField.getPassword();
     }
 
-    private void openKeepassDatabase() {
+    void openKeepassDatabase() {
         String path = getPath();
         char[] password = getPassword();
 

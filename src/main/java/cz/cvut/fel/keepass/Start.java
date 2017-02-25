@@ -23,8 +23,6 @@ public class Start {
 
             @Override
             public void run() {
-                /*SearchScreen ss = new SearchScreen(u);
-                ss.showWindow();*/
                 MainGUI m = new MainGUI();
             }
         });

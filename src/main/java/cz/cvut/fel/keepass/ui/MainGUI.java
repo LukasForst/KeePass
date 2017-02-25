@@ -13,8 +13,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MainGUI{
-    private JFrame mainFrame = new JFrame();
+public class MainGUI {
+    public JFrame mainFrame = new JFrame();
     private JPanel cardPanel, searchScreen;
     private CardLayout cardLayout = new CardLayout();
 
@@ -24,20 +24,36 @@ public class MainGUI{
     public MainGUI() {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLocationRelativeTo(null);
+        mainFrame.setSize(400, 400);
         mainFrame.setTitle("KeePass - 2nd branch");
 
         cardPanel = new JPanel();
         cardPanel.setLayout(cardLayout);
+
         searchScreen = new JPanel();
 
         l1 = new JLabel("Search Screen");
-
         searchScreen.add(l1);
 
-        cardPanel.add(new FileSelectionPanel().fileSelectionPanel, "fileSelection");
+        FileSelectionPanel fileScreen = new FileSelectionPanel();
+
+        cardPanel.add(fileScreen.fileSelectionPanel, "fileSelection");
         cardPanel.add(searchScreen, "searchScreen");
 
+
+        Action startSearch = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                fileScreen.openKeepassDatabase();
+                cardLayout.show(cardPanel, "searchScreen");
+            }
+        };
+        fileScreen.openFileButton.addActionListener(startSearch);
+        fileScreen.passwordField.addActionListener(startSearch);
+
+
         changePanelButton = new JButton("Change panel");
+
         changePanelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -47,18 +63,12 @@ public class MainGUI{
         });
 
         mainFrame.add(cardPanel);
-        mainFrame.pack();
+        mainFrame.setVisible(true);
     }
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
+/*
+    private JPanel setCardPanel(){
 
-            @Override
-            public void run() {
-                MainGUI m = new MainGUI();
-                m.mainFrame.setVisible(true);
-            }
-        });
     }
-
+*/
 }
