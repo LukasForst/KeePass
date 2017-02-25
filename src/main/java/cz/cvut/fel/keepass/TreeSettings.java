@@ -12,14 +12,14 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class TreeSettings {
 
-    public DefaultMutableTreeNode TreeSettings() {
+    public static DefaultMutableTreeNode TreeSettings() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
         DefaultMutableTreeNode vegetableNode = new DefaultMutableTreeNode("Vegetables");
         DefaultMutableTreeNode fruitNode = new DefaultMutableTreeNode("Fruits");
 
-        //add the child nodes to the root node
         root.add(vegetableNode);
         root.add(fruitNode);
+
         return root;
     }
 }
