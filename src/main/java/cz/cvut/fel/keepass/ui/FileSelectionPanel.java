@@ -83,8 +83,10 @@ public class FileSelectionPanel {
 
         DatabaseUtils utils = new DatabaseUtils();
 
+        KeePassFile file = null;
+
         try {
-            utils.database = utils.open(path, password);
+            file = utils.open(path, password);
 
             PrintWriter writer = new PrintWriter(favouriteFilePath, "UTF-8");
             writer.println(path);
@@ -94,6 +96,6 @@ public class FileSelectionPanel {
             passwordField.setText("");
         }
 
-        return utils.database;
+        return file;
     }
 }

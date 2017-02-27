@@ -50,7 +50,6 @@ public class MainGUI {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 KeePassFile dat = fileScreen.openKeepassDatabase();
-
                 if (dat != null) {
                     cardLayout.show(cardPanel, "searchScreen");
                     searchPanel.database = dat;

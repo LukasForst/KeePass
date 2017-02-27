@@ -22,11 +22,13 @@ import java.util.List;
 public class SearchPanel {
     private static DatabaseUtils utils = new DatabaseUtils();
     public JPanel panel;
+
     KeePassFile database;
+
     private JTextField searchField;
     private JList entriesList;
     private JTree groupsTree;
-    private JButton button1;
+    private JButton searchButton;
 
     public SearchPanel() {
 
