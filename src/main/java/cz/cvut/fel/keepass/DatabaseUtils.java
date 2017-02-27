@@ -16,11 +16,16 @@ import java.util.List;
 
 
 public class DatabaseUtils {
-    public KeePassFile database;
+    private KeePassFile database;
+
+    public DatabaseUtils(KeePassFile dat) {
+        database = dat;
+    }
 
     public KeePassFile open(String path, char[] password) {
-        database = KeePassDatabase.getInstance(path).openDatabase(new String(password));
-        return database;
+        KeePassFile dat = KeePassDatabase.getInstance(path).openDatabase(new String(password));
+        database = dat;
+        return dat;
     }
 
     public List<Group> getGroups() {

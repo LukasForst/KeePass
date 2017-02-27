@@ -8,16 +8,11 @@
 
 package cz.cvut.fel.keepass.ui;
 
-import cz.cvut.fel.keepass.DatabaseUtils;
-import de.slackspace.openkeepass.domain.KeePassFile;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
-import java.io.PrintWriter;
 
 public class FileSelectionPanel {
     public JPanel panel;
@@ -31,7 +26,7 @@ public class FileSelectionPanel {
 
     private String favouriteFilePath = "fav";   //path where is stored favourite file path
 
-    public FileSelectionPanel() {
+    FileSelectionPanel() {
         findPathButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -39,7 +34,7 @@ public class FileSelectionPanel {
                 jFileChooser.showOpenDialog(null);
 
                 pathField.setText(jFileChooser.getSelectedFile().getAbsolutePath()); //writes path to the field
-                passwordField.requestFocus();
+                passwordField.requestFocusInWindow();
             }
         });
 
@@ -63,39 +58,12 @@ public class FileSelectionPanel {
         }
     }
 
-    private String getPath() { //returns main file path
+    String getPath() { //returns main file path
         return pathField.getText();
     }
 
-    private char[] getPassword() {
+    char[] getPassword() {
         return passwordField.getPassword();
     }
 
-    KeePassFile openKeepassDatabase() {
-        String path = getPath();
-        char[] password = getPassword();
-
-        File f = new File(path);
-        if (!(f.exists() && !f.isDirectory())) {
-            JOptionPane.showMessageDialog(null, "You must enter the valid file!");
-            return null;
-        }
-
-        DatabaseUtils utils = new DatabaseUtils();
-
-        KeePassFile file = null;
-
-        try {
-            file = utils.open(path, password);
-
-            PrintWriter writer = new PrintWriter(favouriteFilePath, "UTF-8");
-            writer.println(path);
-            writer.close();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e.getMessage());
-            passwordField.setText("");
-        }
-
-        return file;
-    }
 }

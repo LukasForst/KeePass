@@ -8,87 +8,92 @@
 
 package cz.cvut.fel.keepass.ui;
 
-import cz.cvut.fel.keepass.DatabaseUtils;
 import de.slackspace.openkeepass.domain.Entry;
 import de.slackspace.openkeepass.domain.Group;
 import de.slackspace.openkeepass.domain.KeePassFile;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
 import java.util.List;
 
+
 public class SearchPanel {
-    private static DatabaseUtils utils = new DatabaseUtils();
     public JPanel panel;
 
-    KeePassFile database;
+    KeePassFile database = null;
 
     private JTextField searchField;
-    private JList entriesList;
-    private JTree groupsTree;
+    private JList groupsList;
     private JButton searchButton;
+    private JList entriesList;
 
-    public SearchPanel() {
-
-    }
-
-    private boolean isValid() {
-        if (utils.database == null) {
-            if (database == null) {
-                return false;
-            } else {
-                utils.database = database;
-                return true;
+    SearchPanel() {
+        Action searchEntries = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                searchInDatabase();
             }
-        } else {
-            return true;
-        }
+        };
+        searchButton.addActionListener(searchEntries);
+        searchField.addActionListener(searchEntries);
+
+        groupsList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent listSelectionEvent) {
+                searchForEntriesInGroup(groupsList.getSelectedValue().toString());
+            }
+        });
     }
 
     private void searchInDatabase() {
         String search = searchField.getText();
         if (search.startsWith("!g") || search.startsWith("!G")) {
-            searchGroups();
+            setGroupsList();
         } else {
-            searchEntry(search);
+            searchForSpecificEntry(search);
         }
     }
 
-    private void searchGroups() {
-        if (!isValid()) {
-            return;
-        }
+    void setGroupsList() { // finds all groups
+        groupsList.setListData(database.getGroups().toArray());
 
-        List<Group> groups = utils.getGroups();
-        String groupsNames = "";
-
-
-        for (Group group : groups) {
-            groupsNames += group.getName() + "\n";
-            //databaseStructureTree
-            //TODO every entry
-        }
     }
 
-    private void searchEntry(String search) {
-        if (!isValid()) {
-            return;
+    private void searchForEntriesInGroup(String groupName) {
+        Group group = database.getGroupByName(groupName);
+        List<Entry> entries = group.getEntries();
+
+        if (entries.size() == 0) {
+            entriesList.removeAll();
         }
 
-        List<Entry> entries = utils.searchEntry(search);
+        String[] data = new String[entries.size()];
+        int i = 0;
+        for (Entry entry : entries) {
+            data[i] += entry.getTitle() + " ------- " + entry.getUsername() + " ------- " + entry.getPassword() + "\n";
+            i++;
+        }
 
-        String userNames = "";
+        entriesList.setListData(data);
+    }
 
-        if (entries.isEmpty()) {
-            //Todo no entry
-        } else {
-            for (Entry entry : entries) {
-                userNames += entry.getUsername() + "\n";
-                //TODO add entry
+    private void searchForSpecificEntry(String phrase) {
+        List<Entry> entries = database.getEntries();
+        List<Entry> fin = database.getEntries();
+
+        for (Entry entry : entries) {
+            if (entry.getUsername().contains(phrase) || entry.getTitle().contains(phrase) || entry.getNotes().contains(phrase)) {
+                continue;
+            } else {
+                fin.remove(entry);
             }
         }
+        entriesList.setListData(fin.toArray());
     }
 
     private void copyToClipboard(String text) {
