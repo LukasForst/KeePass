@@ -69,7 +69,7 @@ public class SearchPanel {
         List<Entry> entries = group.getEntries();
 
         if (entries.size() == 0) {
-            entriesList.removeAll();
+            entriesList.setListData(new String[]{});
             return;
         }
 
@@ -85,23 +85,29 @@ public class SearchPanel {
 
     private void searchForSpecificEntry(String phrase) {
         List<Entry> entries = database.getEntries();
-        List<Entry> fin = database.getEntries();
+        String[] data = new String[entries.size()];
+        int index = 0;
 
         for (Entry entry : entries) {
-            if (entry.getUsername().contains(phrase) || entry.getTitle().contains(phrase) || entry.getNotes().contains(phrase)) {
-                continue;
-            } else {
-                fin.remove(entry);
+            if (entry.getTitle().contains(phrase)) {
+                data[index] = entry.getUsername() + "   " + entry.getPassword() + "  " + entry.getTitle();
+                index++;
             }
         }
-        entriesList.setListData(fin.toArray());
+
+        if (index == 0) {
+            entriesList.setListData(new String[]{"Nothing found!"});
+            return;
+        } else {
+            entriesList.removeAll();
+            entriesList.setListData(data);
+        }
     }
 
     private void copyToClipboard(String text) {
         StringSelection stringSelection = new StringSelection(text);
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
         clip.setContents(stringSelection, null);
-
     }
 
 }
