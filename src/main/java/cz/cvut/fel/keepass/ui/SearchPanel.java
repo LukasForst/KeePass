@@ -70,6 +70,7 @@ public class SearchPanel {
 
         if (entries.size() == 0) {
             entriesList.removeAll();
+            return;
         }
 
         String[] data = new String[entries.size()];
