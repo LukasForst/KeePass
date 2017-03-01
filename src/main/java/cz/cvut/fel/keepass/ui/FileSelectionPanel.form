@@ -25,6 +25,9 @@
           </grid>
         </constraints>
         <properties>
+          <editable value="true"/>
+          <focusCycleRoot value="false"/>
+          <focusable value="true"/>
           <text value=""/>
         </properties>
       </component>

@@ -15,6 +15,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class MainGUI {
     private JFrame mainFrame = new JFrame();
@@ -30,7 +32,7 @@ public class MainGUI {
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(400, 400);
-        mainFrame.setTitle("KeePass - Lukas Forst");
+        mainFrame.setTitle("KeePass");
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
     }
@@ -51,47 +53,53 @@ public class MainGUI {
                 KeePassFile dat = getDatabase(fileScreen.getPath(), fileScreen.getPassword());
 
                 if (dat == null) {
-                    return;
+                    fileScreen.passwordField.setText("");
                 } else {
-                    searchPanel.database = dat;
+                    saveLastPath(fileScreen.getFavouriteFilePath(), fileScreen.getPath());
+
+                    searchPanel.setDatabase(dat);
                     searchPanel.setGroupsList();
 
-                    mainFrame.setLocationRelativeTo(null);
-
+                    mainFrame.setVisible(false);
                     cardLayout.show(cardPanel, "searchScreen");
                     mainFrame.setSize(700, 700);
                     mainFrame.setLocationRelativeTo(null);
+                    mainFrame.setVisible(true);
                 }
             }
         };
+
         fileScreen.openFileButton.addActionListener(openSearchScreen);
         fileScreen.passwordField.addActionListener(openSearchScreen);
 
         return cardPanel;
     }
 
-    private KeePassFile getDatabase(String path, char[] pass) {
+    private KeePassFile getDatabase(String path, String pass) {
         File f = new File(path);
         if (!(f.exists() && !f.isDirectory())) {
             JOptionPane.showMessageDialog(null, "You must enter the valid file!");
             return null;
         }
-        KeePassFile dat = null;
 
         try {
-            dat = KeePassDatabase.getInstance(path).openDatabase(new String(pass));
-
+            return KeePassDatabase.getInstance(path).openDatabase(pass);
         } catch (Exception e) {
-            System.err.println(e);
             JOptionPane.showMessageDialog(null, e.getMessage());
-        }
-
-        if (dat != null) {
-            return dat;
-        } else {
             return null;
         }
-
     }
 
+    private boolean saveLastPath(String favouriteFilePath, String databasePath) {
+        try {
+            PrintWriter writer = new PrintWriter(favouriteFilePath, "UTF-8");
+            writer.print(databasePath);
+            writer.close();
+            return true;
+
+        } catch (IOException e) {
+            System.err.println(e);
+            return false;
+        }
+    }
 }
