@@ -24,13 +24,15 @@ import java.util.List;
 
 
 public class SearchPanel {
-    public JPanel panel;
+    private JPanel panel;
     private KeePassFile database = null;
     private JTextField searchField;
     private JList groupsList;
     private JButton searchButton;
     private JTable entriesTable;
     private String[] columnTableNames = {"Title", "UserName", "Password"};
+
+
     SearchPanel() {
         Action searchEntries = new AbstractAction() {
             @Override
@@ -47,10 +49,15 @@ public class SearchPanel {
                 searchForEntriesInGroup(groupsList.getSelectedValue().toString());
             }
         });
+
         groupsList.add(new JScrollPane());
 
         entriesTable.setCellSelectionEnabled(true);
         entriesTable.add(new JScrollPane());
+    }
+
+    public JPanel getPanel() {
+        return panel;
     }
 
     public KeePassFile getDatabase() {
@@ -71,8 +78,10 @@ public class SearchPanel {
     }
 
     void setGroupsList() { // finds all groups
-        groupsList.setListData(database.getGroups().toArray());
-        searchField.requestFocus();
+        if (database != null) {
+            groupsList.setListData(database.getGroups().toArray());
+            searchField.requestFocus();
+        }
     }
 
     private void searchForEntriesInGroup(String groupName) {

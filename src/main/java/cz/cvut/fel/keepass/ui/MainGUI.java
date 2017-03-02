@@ -15,8 +15,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 
 public class MainGUI {
     private JFrame mainFrame = new JFrame();
@@ -25,9 +23,11 @@ public class MainGUI {
 
     private KeePassFile database;
 
+    private FileSelectionPanel fileSelectionPanel;
+    private SearchPanel searchPanel;
+
     public MainGUI() {
         cardPanel = setCardPanel();
-
         mainFrame.add(cardPanel);
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -41,22 +41,23 @@ public class MainGUI {
         cardPanel = new JPanel();
         cardPanel.setLayout(cardLayout);
 
-        FileSelectionPanel fileScreen = new FileSelectionPanel();
-        cardPanel.add(fileScreen.panel, "fileSelection");
+        cardPanel.add(setSearchScreen(), "searchScreen");
+        cardPanel.add(setFileScreen(), "fileSelection");
+        cardLayout.show(cardPanel, "fileSelection");
 
-        SearchPanel searchPanel = new SearchPanel();
-        cardPanel.add(searchPanel.panel, "searchScreen");
+        return cardPanel;
+    }
+
+    private JPanel setFileScreen() {
+        fileSelectionPanel = new FileSelectionPanel();
 
         Action openSearchScreen = new AbstractAction() { // opens database
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                KeePassFile dat = getDatabase(fileScreen.getPath(), fileScreen.getPassword());
-
+                KeePassFile dat = getDatabase(fileSelectionPanel.getPath(), fileSelectionPanel.getPassword());
                 if (dat == null) {
-                    fileScreen.passwordField.setText("");
+                    fileSelectionPanel.setPasswordField("");
                 } else {
-                    saveLastPath(fileScreen.getFavouriteFilePath(), fileScreen.getPath());
-
                     searchPanel.setDatabase(dat);
                     searchPanel.setGroupsList();
 
@@ -69,10 +70,17 @@ public class MainGUI {
             }
         };
 
-        fileScreen.openFileButton.addActionListener(openSearchScreen);
-        fileScreen.passwordField.addActionListener(openSearchScreen);
+        fileSelectionPanel.getOpenFileButton().addActionListener(openSearchScreen);
+        fileSelectionPanel.getPasswordField().addActionListener(openSearchScreen);
 
-        return cardPanel;
+        return fileSelectionPanel.getPanel();
+    }
+
+    private JPanel setSearchScreen() {
+        searchPanel = new SearchPanel();
+
+
+        return searchPanel.getPanel();
     }
 
     private KeePassFile getDatabase(String path, String pass) {
@@ -90,16 +98,4 @@ public class MainGUI {
         }
     }
 
-    private boolean saveLastPath(String favouriteFilePath, String databasePath) {
-        try {
-            PrintWriter writer = new PrintWriter(favouriteFilePath, "UTF-8");
-            writer.print(databasePath);
-            writer.close();
-            return true;
-
-        } catch (IOException e) {
-            System.err.println(e);
-            return false;
-        }
-    }
 }

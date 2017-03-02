@@ -15,17 +15,18 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.PrintWriter;
 
 public class FileSelectionPanel {
-    public JPanel panel;
-    JPasswordField passwordField;
-    JButton openFileButton;
+    private JPanel panel;
+    private JPasswordField passwordField;
+    private JButton openFileButton;
     private JTextField pathField;
     private JLabel informationLabel;
     private JButton findPathButton;
-    private String favouriteFilePath = "fav.txt";   //path where is stored favourite file path
+    private String storedFavouritePath = "fav.txt";   //path where is stored favourite file path
 
-    FileSelectionPanel() {
+    public FileSelectionPanel() {
         findPathButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -47,30 +48,50 @@ public class FileSelectionPanel {
         });
     }
 
-    public String getFavouriteFilePath() {
-        return favouriteFilePath;
+    public JPanel getPanel() {
+        return panel;
+    }
+
+    public JPasswordField getPasswordField() {
+        return passwordField;
+    }
+
+    public void setPasswordField(String text) {
+        passwordField.setText(text);
+    }
+
+    public JButton getOpenFileButton() {
+        return openFileButton;
     }
 
     private void getLastPath() {
         try { //reading last used path to the kdbx file
             String path;
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(favouriteFilePath));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(storedFavouritePath));
             path = bufferedReader.readLine();
             bufferedReader.close();
-
             pathField.setText(path);
-            favouriteFilePath = path;
-
         } catch (Exception e) {
             pathField.setText("");
         }
     }
 
-    String getPath() { //returns main file path
+    private void saveLastPath() {
+        try { //reading last used path to the kdbx file
+            PrintWriter writer = new PrintWriter(storedFavouritePath, "UTF-8");
+            writer.print(pathField.getText());
+            writer.close();
+        } catch (Exception e) {
+            System.err.println(e.getMessage() + " -- " + e.getCause());
+        }
+    }
+
+    public String getPath() { //returns main file path
+        saveLastPath();
         return pathField.getText();
     }
 
-    String getPassword() {
+    public String getPassword() {
         return new String(passwordField.getPassword());
     }
 
