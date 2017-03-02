@@ -42,8 +42,8 @@ public class MainGUI {
         cardPanel.setLayout(cardLayout);
 
         cardPanel.add(setSearchScreen(), "searchScreen");
-        cardPanel.add(setFileScreen(), "fileSelection");
-        cardLayout.show(cardPanel, "fileSelection");
+        cardPanel.add(setFileScreen(), "fileScreen");
+        cardLayout.show(cardPanel, "fileScreen");
 
         return cardPanel;
     }
@@ -59,7 +59,6 @@ public class MainGUI {
                     fileSelectionPanel.setPasswordField("");
                 } else {
                     searchPanel.setDatabase(dat);
-                    searchPanel.setGroupsList();
 
                     mainFrame.setVisible(false);
                     cardLayout.show(cardPanel, "searchScreen");

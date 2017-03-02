@@ -20,40 +20,29 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 
 public class SearchPanel {
     private JPanel panel;
-    private KeePassFile database = null;
     private JTextField searchField;
     private JList groupsList;
     private JButton searchButton;
     private JTable entriesTable;
+
+    private KeePassFile database = null;
     private String[] columnTableNames = {"Title", "UserName", "Password"};
 
 
-    SearchPanel() {
-        Action searchEntries = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                searchInDatabase();
-            }
-        };
-        searchButton.addActionListener(searchEntries);
-        searchField.addActionListener(searchEntries);
+    public SearchPanel() {
+        groupsList.add(new JScrollPane()); //groups list config
 
-        groupsList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent listSelectionEvent) {
-                searchForEntriesInGroup(groupsList.getSelectedValue().toString());
-            }
-        });
-
-        groupsList.add(new JScrollPane());
-
-        entriesTable.setCellSelectionEnabled(true);
+        entriesTable.setCellSelectionEnabled(true); //table config
         entriesTable.add(new JScrollPane());
+
+        setListeners();
     }
 
     public JPanel getPanel() {
@@ -66,15 +55,7 @@ public class SearchPanel {
 
     public void setDatabase(KeePassFile database) {
         this.database = database;
-    }
-
-    private void searchInDatabase() {
-        String search = searchField.getText();
-        if (search.startsWith("!g") || search.startsWith("!G")) {
-            setGroupsList();
-        } else {
-            searchForSpecificEntry(search);
-        }
+        setGroupsList();
     }
 
     void setGroupsList() { // finds all groups
@@ -104,13 +85,13 @@ public class SearchPanel {
         entriesTable.setModel(new DefaultTableModel(data, columnTableNames));
     }
 
-    private void searchForSpecificEntry(String phrase) {
+    private void searchForSpecificEntry(String phrase) { //phrase is in lowercase, because of case sensitivity
         List<Entry> entries = database.getEntries();
         String[][] data = new String[entries.size()][3];
         int arrayIndex = 0;
 
         for (Entry entry : entries) {
-            if (entry.getTitle().contains(phrase) || entry.getUsername().contains(phrase)) {
+            if (entry.toString().toLowerCase().contains(phrase)) {
                 data[arrayIndex][0] = entry.getTitle();
                 data[arrayIndex][1] = entry.getUsername();
                 data[arrayIndex][2] = entry.getPassword();
@@ -133,11 +114,39 @@ public class SearchPanel {
         }
     }
 
-
     private void copyToClipboard(String text) {
         StringSelection stringSelection = new StringSelection(text);
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
         clip.setContents(stringSelection, null);
+    }
+
+    private void setListeners() { //method with all listeners
+        entriesTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                int x = entriesTable.getSelectedRow();
+                int y = entriesTable.getSelectedColumn();
+                String selectedText = entriesTable.getModel().getValueAt(x, y).toString(); // gets value at coordinates
+                copyToClipboard(selectedText);
+            }
+        });
+
+        groupsList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent listSelectionEvent) {
+                searchForEntriesInGroup(groupsList.getSelectedValue().toString());
+            }
+        });
+
+        Action searchEntries = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                searchForSpecificEntry(searchField.getText().toLowerCase());
+            }
+        };
+        searchButton.addActionListener(searchEntries);
+        searchField.addActionListener(searchEntries);
     }
 
 }

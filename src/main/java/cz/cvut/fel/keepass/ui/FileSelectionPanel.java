@@ -27,7 +27,19 @@ public class FileSelectionPanel {
     private String storedFavouritePath = "fav.txt";   //path where is stored favourite file path
 
     public FileSelectionPanel() {
-        findPathButton.addActionListener(new ActionListener() {
+        getLastPath(); // gets last used keepass database file path
+        setListeners();
+    }
+
+    private void setListeners() {
+        panel.addPropertyChangeListener(new PropertyChangeListener() { //focus for the password field
+            @Override
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                passwordField.requestFocus();
+            }
+        });
+
+        findPathButton.addActionListener(new ActionListener() {  //opens file dialog
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 JFileChooser jFileChooser = new JFileChooser();
@@ -39,14 +51,7 @@ public class FileSelectionPanel {
                 passwordField.requestFocusInWindow();
             }
         });
-        getLastPath();
-        panel.addPropertyChangeListener(new PropertyChangeListener() { //focus for the password field
-            @Override
-            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-                passwordField.requestFocus();
-            }
-        });
-    }
+    } //sets all listeners
 
     public JPanel getPanel() {
         return panel;

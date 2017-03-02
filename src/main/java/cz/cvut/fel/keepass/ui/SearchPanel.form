@@ -44,6 +44,10 @@
           </grid>
         </constraints>
         <properties>
+          <autoCreateRowSorter value="true"/>
+          <autoscrolls value="false"/>
+          <cellSelectionEnabled value="true"/>
+          <columnSelectionAllowed value="true"/>
           <enabled value="true"/>
           <opaque value="true"/>
           <showVerticalLines value="false"/>
