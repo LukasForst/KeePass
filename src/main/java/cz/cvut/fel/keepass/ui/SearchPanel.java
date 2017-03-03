@@ -22,6 +22,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -31,17 +32,15 @@ public class SearchPanel {
     private JList groupsList;
     private JButton searchButton;
     private JTable entriesTable;
+    private JScrollPane tableScrollPane;
 
     private KeePassFile database = null;
     private String[] columnTableNames = {"Title", "UserName", "Password"};
-
+    private String[][] currentDisplayedData;
 
     public SearchPanel() {
-        groupsList.add(new JScrollPane()); //groups list config
-
         entriesTable.setCellSelectionEnabled(true); //table config
-        entriesTable.add(new JScrollPane());
-
+        entriesTable.setColumnSelectionAllowed(true);
         setListeners();
     }
 
@@ -58,7 +57,7 @@ public class SearchPanel {
         setGroupsList();
     }
 
-    void setGroupsList() { // finds all groups
+    private void setGroupsList() { // finds all groups
         if (database != null) {
             groupsList.setListData(database.getGroups().toArray());
             searchField.requestFocus();
@@ -75,40 +74,48 @@ public class SearchPanel {
         }
 
         String[][] data = new String[entries.size()][3];
-        int arrayIndex = 0;
+        int arrayIndex = -1;
         for (Entry entry : entries) {
+            arrayIndex++;
             data[arrayIndex][0] = entry.getTitle();
             data[arrayIndex][1] = entry.getUsername();
             data[arrayIndex][2] = entry.getPassword();
-            arrayIndex++;
         }
+        currentDisplayedData = deepCopy(data);
+
+        hidePasswords(data, arrayIndex);
+
         entriesTable.setModel(new DefaultTableModel(data, columnTableNames));
     }
 
     private void searchForSpecificEntry(String phrase) { //phrase is in lowercase, because of case sensitivity
         List<Entry> entries = database.getEntries();
         String[][] data = new String[entries.size()][3];
-        int arrayIndex = 0;
 
+        int arrayIndex = -1;
         for (Entry entry : entries) {
             if (entry.toString().toLowerCase().contains(phrase)) {
+                arrayIndex++;
                 data[arrayIndex][0] = entry.getTitle();
                 data[arrayIndex][1] = entry.getUsername();
                 data[arrayIndex][2] = entry.getPassword();
-                arrayIndex++;
             }
         }
 
-        if (arrayIndex == 0) {
-            entriesTable.setModel(new DefaultTableModel(new String[][]{{"Nothing found!"}}, new String[]{" "}));
+        if (arrayIndex == -1) {
+            currentDisplayedData = null;
+            entriesTable.setModel(new DefaultTableModel(new String[][]{{" ", "Nothing found!", " "}}, new String[]{"", "", ""}));
         } else {
-            String[][] finalStringArray = new String[arrayIndex][3];
+            String[][] finalStringArray = new String[arrayIndex + 1][3];
 
-            for (int i = 0; i < arrayIndex; i++) {
+            for (int i = 0; i <= arrayIndex; i++) {
                 finalStringArray[i][0] = data[i][0];
-                finalStringArray[i][1] = data[i][2];
+                finalStringArray[i][1] = data[i][1];
                 finalStringArray[i][2] = data[i][2];
             }
+
+            currentDisplayedData = deepCopy(finalStringArray);
+            hidePasswords(finalStringArray, arrayIndex);
 
             entriesTable.setModel(new DefaultTableModel(finalStringArray, columnTableNames));
         }
@@ -125,10 +132,13 @@ public class SearchPanel {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 super.mouseClicked(mouseEvent);
+
+                if (currentDisplayedData == null) return; // Nothing found statement
+
                 int x = entriesTable.getSelectedRow();
                 int y = entriesTable.getSelectedColumn();
-                String selectedText = entriesTable.getModel().getValueAt(x, y).toString(); // gets value at coordinates
-                copyToClipboard(selectedText);
+
+                copyToClipboard(currentDisplayedData[x][y]); // gets value at coordinates
             }
         });
 
@@ -147,6 +157,25 @@ public class SearchPanel {
         };
         searchButton.addActionListener(searchEntries);
         searchField.addActionListener(searchEntries);
+    }
+
+    private String[][] deepCopy(String[][] source) {
+        String[][] target = new String[source.length][];
+        for (int i = 0; i < source.length; i++) {
+            target[i] = Arrays.copyOf(source[i], source[i].length);
+        }
+
+        return target;
+    }
+
+    private void hidePasswords(String[][] data, int arrayIndex) { // use * for hiding passwords
+        for (int i = 0; i <= arrayIndex; i++) {
+            String format = "";
+            for (int u = 0; u < data[i][2].length(); u++) {
+                format += "*";
+            }
+            data[i][2] = format;
+        }
     }
 
 }
