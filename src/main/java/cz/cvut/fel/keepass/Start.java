@@ -8,12 +8,15 @@
 
 package cz.cvut.fel.keepass;
 
-import cz.cvut.fel.keepass.ui.MainGUI;
-
 import java.awt.*;
 
 public class Start {
     public static void main(String[] args) {
+        Start s = new Start();
+        s.runKeepass();
+    }
+
+    private void runKeepass() {
         EventQueue.invokeLater(new Runnable() {
 
             @Override
@@ -21,7 +24,5 @@ public class Start {
                 new MainGUI();
             }
         });
-
-
     }
 }

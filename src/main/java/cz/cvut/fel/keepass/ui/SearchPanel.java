@@ -8,7 +8,8 @@
 
 package cz.cvut.fel.keepass.ui;
 
-import cz.cvut.fel.keepass.DataUtils;
+import cz.cvut.fel.keepass.ui.menus.Menu;
+import cz.cvut.fel.keepass.utils.DataUtils;
 import de.slackspace.openkeepass.domain.Entry;
 import de.slackspace.openkeepass.domain.Group;
 import de.slackspace.openkeepass.domain.KeePassFile;
@@ -17,7 +18,9 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 
@@ -28,7 +31,7 @@ public class SearchPanel {
     private JButton searchButton;
     private JTable entriesTable;
     private JScrollPane tableScrollPane;
-    private JMenu openMenu;
+    private JMenu fileMenu;
     private JMenu settingsMenu;
     private JMenu createMenu;
     private JMenuBar menuBar;
@@ -42,45 +45,17 @@ public class SearchPanel {
         entriesTable.setColumnSelectionAllowed(true);
 
         setListeners();
-        createMenuBar();
     }
 
     public JPanel getPanel() {
         return panel;
     }
 
-    private void setDatabase(KeePassFile database) {
+    public void setDatabase(KeePassFile database) {
         this.database = database;
         setGroupsList();
-    }
-
-    private void createMenuBar() {
-        JMenu openRecentDatabaseMenu = new JMenu("Recent files");
-
-        for (int i = 0; i < 3; i++) {
-            String il = "" + i;
-            openRecentDatabaseMenu.add(new JMenuItem(il));
-        }
-
-        JMenu newFilesMenu = new JMenu("New");
-        JMenuItem newDatabase = new JMenuItem("KeePass file");
-        newFilesMenu.add(newDatabase);
-
-        JMenuItem closeDatabase = new JMenuItem("Close");
-        JMenuItem exitProgram = new JMenuItem("Exit");
-
-        openMenu.add(openRecentDatabaseMenu);
-        openMenu.add(newFilesMenu);
-        openMenu.add(closeDatabase);
-        openMenu.add(exitProgram);
-
-        exitProgram.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                MainGUI.showPanel("fileScreen");
-            }
-        });
-
+        entriesTable.setModel(new DefaultTableModel(new String[][]{{" "}}, new String[]{})); //show empty table
+        currentDisplayedData = null;
     }
 
     private void setGroupsList() { // finds all groups
@@ -165,28 +140,31 @@ public class SearchPanel {
         groupsList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent listSelectionEvent) {
-                searchForEntriesInGroup(groupsList.getSelectedValue().toString());
-            }
-        });
-
-        searchField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent focusEvent) {
-                super.focusGained(focusEvent);
-                if (database == null) {
-                    setDatabase(DataUtils.getDatabase());
+                try {
+                    if (groupsList.getSelectedValue() != null) {
+                        Object e = groupsList.getSelectedValue();
+                        searchForEntriesInGroup(e.toString());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
+
 
         Action searchEntries = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 searchForSpecificEntry(searchField.getText().toLowerCase());
-                panel.setVisible(false);
             }
         };
         searchButton.addActionListener(searchEntries);
         searchField.addActionListener(searchEntries);
+    }
+
+    private void createUIComponents() {
+        fileMenu = Menu.getFileMenu();
+        createMenu = Menu.getCreateMenu();
+        settingsMenu = Menu.getSettingsMenu();
     }
 }

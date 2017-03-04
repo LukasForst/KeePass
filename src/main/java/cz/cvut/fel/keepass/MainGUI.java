@@ -6,9 +6,11 @@
  *  Project:    KeePass
  */
 
-package cz.cvut.fel.keepass.ui;
+package cz.cvut.fel.keepass;
 
-import de.slackspace.openkeepass.domain.KeePassFile;
+import cz.cvut.fel.keepass.ui.FileSelectionPanel;
+import cz.cvut.fel.keepass.ui.SearchPanel;
+import cz.cvut.fel.keepass.utils.DataUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,10 +19,8 @@ public class MainGUI {
     private static JFrame mainFrame = new JFrame();
     private static JPanel cardPanel;
     private static CardLayout cardLayout = new CardLayout();
-    private FileSelectionPanel fileSelectionPanel;
-    private SearchPanel searchPanel;
-
-    private KeePassFile database;
+    private static FileSelectionPanel fileSelectionPanel;
+    private static SearchPanel searchPanel;
 
     public MainGUI() {
         cardPanel = configureCardPanel();
@@ -38,12 +38,22 @@ public class MainGUI {
         }
     }
 
+    public static void changeTitle(String newTitle) {
+        mainFrame.setTitle("KeePass - " + newTitle);
+    }
+
     private static void showFileScreen() {
         mainFrame.setVisible(false);
-        cardLayout.show(cardPanel, "fileScreen");
+        mainFrame.setTitle("KeePass");
         mainFrame.setSize(400, 400);
         mainFrame.setLocationRelativeTo(null);
+
+        fileSelectionPanel.setPathFieldText(DataUtils.getCurrentDatabasePath());
+        cardLayout.show(cardPanel, "fileScreen");
+
         mainFrame.setVisible(true);
+        mainFrame.requestFocus();
+        fileSelectionPanel.setFocusOnPasswordField();
     }
 
     private static void showSearchScreen() {
@@ -51,6 +61,9 @@ public class MainGUI {
         cardLayout.show(cardPanel, "searchScreen");
         mainFrame.setSize(700, 700);
         mainFrame.setLocationRelativeTo(null);
+
+        searchPanel.setDatabase(DataUtils.getDatabase());
+
         mainFrame.setVisible(true);
     }
 
@@ -73,6 +86,4 @@ public class MainGUI {
         searchPanel = new SearchPanel();
         return searchPanel.getPanel();
     }
-
-
 }
