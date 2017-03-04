@@ -104,7 +104,7 @@ public class SearchPanel {
 
         if (arrayIndex == -1) {
             currentDisplayedData = null;
-            entriesTable.setModel(new DefaultTableModel(new String[][]{{" ", "Nothing found!", " "}}, new String[]{"", "", ""}));
+            entriesTable.setModel(new DefaultTableModel(new String[][]{{"Nothing found!"}}, new String[]{""}));
         } else {
             String[][] finalStringArray = new String[arrayIndex + 1][3];
 
