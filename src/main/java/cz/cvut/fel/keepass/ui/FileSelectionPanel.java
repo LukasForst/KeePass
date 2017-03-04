@@ -8,12 +8,16 @@
 
 package cz.cvut.fel.keepass.ui;
 
+import de.slackspace.openkeepass.KeePassDatabase;
+import de.slackspace.openkeepass.domain.KeePassFile;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 
@@ -26,12 +30,22 @@ public class FileSelectionPanel {
     private JButton findPathButton;
     private String storedFavouritePath = "fav.txt";   //path where is stored favourite file path
 
+    private KeePassFile database = null;
+
     public FileSelectionPanel() {
         getLastPath(); // gets last used keepass database file path
         setListeners();
     }
 
-    private void setListeners() {
+    public KeePassFile getDatabase() {
+        return database;
+    }
+
+    public JPanel getPanel() {
+        return panel;
+    }
+
+    private void setListeners() {//sets all listeners
         panel.addPropertyChangeListener(new PropertyChangeListener() { //focus for the password field
             @Override
             public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
@@ -51,22 +65,23 @@ public class FileSelectionPanel {
                 passwordField.requestFocusInWindow();
             }
         });
-    } //sets all listeners
 
-    public JPanel getPanel() {
-        return panel;
-    }
+        Action openSearchScreen = new AbstractAction() { // opens database
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                KeePassFile dat = getDatabase(pathField.getText(), passwordField.getPassword());
+                if (dat == null) {
+                    passwordField.setText("");
+                } else {
+                    saveLastPath();
+                    MainGUI.showPanel("searchScreen");
+                    passwordField.setText("");
+                }
+            }
+        };
 
-    public JPasswordField getPasswordField() {
-        return passwordField;
-    }
-
-    public void setPasswordField(String text) {
-        passwordField.setText(text);
-    }
-
-    public JButton getOpenFileButton() {
-        return openFileButton;
+        openFileButton.addActionListener(openSearchScreen);
+        passwordField.addActionListener(openSearchScreen);
     }
 
     private void getLastPath() {
@@ -91,13 +106,21 @@ public class FileSelectionPanel {
         }
     }
 
-    public String getPath() { //returns main file path
-        saveLastPath();
-        return pathField.getText();
-    }
+    private KeePassFile getDatabase(String path, char[] pass) {
+        String password = new String(pass);
+        File f = new File(path);
+        if (!(f.exists() && !f.isDirectory())) {
+            JOptionPane.showMessageDialog(null, "You must enter the valid file!");
+            return null;
+        }
 
-    public String getPassword() {
-        return new String(passwordField.getPassword());
+        try {
+            database = KeePassDatabase.getInstance(path).openDatabase(password);
+            return database;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+            return null;
+        }
     }
 
 }

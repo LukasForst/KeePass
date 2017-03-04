@@ -33,6 +33,10 @@ public class SearchPanel {
     private JButton searchButton;
     private JTable entriesTable;
     private JScrollPane tableScrollPane;
+    private JMenu openMenu;
+    private JMenu settingsMenu;
+    private JMenu createMenu;
+    private JMenuBar menuBar;
 
     private KeePassFile database = null;
     private String[] columnTableNames = {"Title", "UserName", "Password"};
@@ -41,7 +45,9 @@ public class SearchPanel {
     public SearchPanel() {
         entriesTable.setCellSelectionEnabled(true); //table config
         entriesTable.setColumnSelectionAllowed(true);
+
         setListeners();
+        createMenuBar();
     }
 
     public JPanel getPanel() {
@@ -55,6 +61,35 @@ public class SearchPanel {
     public void setDatabase(KeePassFile database) {
         this.database = database;
         setGroupsList();
+    }
+
+    private void createMenuBar() {
+        JMenu openRecentDatabaseMenu = new JMenu("Recent files");
+
+        for (int i = 0; i < 3; i++) {
+            String il = "" + i;
+            openRecentDatabaseMenu.add(new JMenuItem(il));
+        }
+
+        JMenu newFilesMenu = new JMenu("New");
+        JMenuItem newDatabase = new JMenuItem("KeePass file");
+        newFilesMenu.add(newDatabase);
+
+        JMenuItem closeDatabase = new JMenuItem("Close");
+        JMenuItem exitProgram = new JMenuItem("Exit");
+
+        openMenu.add(openRecentDatabaseMenu);
+        openMenu.add(newFilesMenu);
+        openMenu.add(closeDatabase);
+        openMenu.add(exitProgram);
+
+        exitProgram.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                MainGUI.showPanel("fileScreen");
+            }
+        });
+
     }
 
     private void setGroupsList() { // finds all groups
@@ -177,5 +212,4 @@ public class SearchPanel {
             data[i][2] = format;
         }
     }
-
 }
