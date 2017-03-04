@@ -8,6 +8,7 @@
 
 package cz.cvut.fel.keepass.ui;
 
+import cz.cvut.fel.keepass.DataUtils;
 import de.slackspace.openkeepass.KeePassDatabase;
 import de.slackspace.openkeepass.domain.KeePassFile;
 
@@ -116,6 +117,7 @@ public class FileSelectionPanel {
 
         try {
             database = KeePassDatabase.getInstance(path).openDatabase(password);
+            DataUtils.setDatabase(database);
             return database;
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage());

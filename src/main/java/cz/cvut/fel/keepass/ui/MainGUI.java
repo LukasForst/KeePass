@@ -17,12 +17,13 @@ public class MainGUI {
     private static JFrame mainFrame = new JFrame();
     private static JPanel cardPanel;
     private static CardLayout cardLayout = new CardLayout();
-    private static FileSelectionPanel fileSelectionPanel;
-    private static SearchPanel searchPanel;
+    private FileSelectionPanel fileSelectionPanel;
+    private SearchPanel searchPanel;
+
     private KeePassFile database;
 
     public MainGUI() {
-        cardPanel = setCardPanel();
+        cardPanel = configureCardPanel();
         mainFrame.add(cardPanel);
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,29 +48,28 @@ public class MainGUI {
 
     private static void showSearchScreen() {
         mainFrame.setVisible(false);
-        searchPanel.setDatabase(fileSelectionPanel.getDatabase());
         cardLayout.show(cardPanel, "searchScreen");
         mainFrame.setSize(700, 700);
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setVisible(true);
     }
 
-    private JPanel setCardPanel() {
+    private JPanel configureCardPanel() {
         cardPanel = new JPanel();
         cardPanel.setLayout(cardLayout);
 
-        cardPanel.add(setSearchScreen(), "searchScreen");
-        cardPanel.add(setFileScreen(), "fileScreen");
+        cardPanel.add(configureSearchScreen(), "searchScreen");
+        cardPanel.add(configureFileScreen(), "fileScreen");
         showFileScreen();
         return cardPanel;
     }
 
-    private JPanel setFileScreen() {
+    private JPanel configureFileScreen() {
         fileSelectionPanel = new FileSelectionPanel();
         return fileSelectionPanel.getPanel();
     }
 
-    private JPanel setSearchScreen() {
+    private JPanel configureSearchScreen() {
         searchPanel = new SearchPanel();
         return searchPanel.getPanel();
     }

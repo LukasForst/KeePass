@@ -8,6 +8,7 @@
 
 package cz.cvut.fel.keepass.ui;
 
+import cz.cvut.fel.keepass.DataUtils;
 import de.slackspace.openkeepass.domain.Entry;
 import de.slackspace.openkeepass.domain.Group;
 import de.slackspace.openkeepass.domain.KeePassFile;
@@ -16,13 +17,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Arrays;
+import java.awt.event.*;
 import java.util.List;
 
 
@@ -54,11 +49,7 @@ public class SearchPanel {
         return panel;
     }
 
-    public KeePassFile getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(KeePassFile database) {
+    private void setDatabase(KeePassFile database) {
         this.database = database;
         setGroupsList();
     }
@@ -116,9 +107,9 @@ public class SearchPanel {
             data[arrayIndex][1] = entry.getUsername();
             data[arrayIndex][2] = entry.getPassword();
         }
-        currentDisplayedData = deepCopy(data);
+        currentDisplayedData = DataUtils.deepCopy(data);
 
-        hidePasswords(data, arrayIndex);
+        DataUtils.hidePasswords(data, arrayIndex);
 
         entriesTable.setModel(new DefaultTableModel(data, columnTableNames));
     }
@@ -149,17 +140,11 @@ public class SearchPanel {
                 finalStringArray[i][2] = data[i][2];
             }
 
-            currentDisplayedData = deepCopy(finalStringArray);
-            hidePasswords(finalStringArray, arrayIndex);
+            currentDisplayedData = DataUtils.deepCopy(finalStringArray);
+            DataUtils.hidePasswords(finalStringArray, arrayIndex);
 
             entriesTable.setModel(new DefaultTableModel(finalStringArray, columnTableNames));
         }
-    }
-
-    private void copyToClipboard(String text) {
-        StringSelection stringSelection = new StringSelection(text);
-        Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clip.setContents(stringSelection, null);
     }
 
     private void setListeners() { //method with all listeners
@@ -173,7 +158,7 @@ public class SearchPanel {
                 int x = entriesTable.getSelectedRow();
                 int y = entriesTable.getSelectedColumn();
 
-                copyToClipboard(currentDisplayedData[x][y]); // gets value at coordinates
+                DataUtils.copyToClipboard(currentDisplayedData[x][y]); // gets value at coordinates
             }
         });
 
@@ -184,32 +169,24 @@ public class SearchPanel {
             }
         });
 
+        searchField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent focusEvent) {
+                super.focusGained(focusEvent);
+                if (database == null) {
+                    setDatabase(DataUtils.getDatabase());
+                }
+            }
+        });
+
         Action searchEntries = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 searchForSpecificEntry(searchField.getText().toLowerCase());
+                panel.setVisible(false);
             }
         };
         searchButton.addActionListener(searchEntries);
         searchField.addActionListener(searchEntries);
-    }
-
-    private String[][] deepCopy(String[][] source) {
-        String[][] target = new String[source.length][];
-        for (int i = 0; i < source.length; i++) {
-            target[i] = Arrays.copyOf(source[i], source[i].length);
-        }
-
-        return target;
-    }
-
-    private void hidePasswords(String[][] data, int arrayIndex) { // use * for hiding passwords
-        for (int i = 0; i <= arrayIndex; i++) {
-            String format = "";
-            for (int u = 0; u < data[i][2].length(); u++) {
-                format += "*";
-            }
-            data[i][2] = format;
-        }
     }
 }
