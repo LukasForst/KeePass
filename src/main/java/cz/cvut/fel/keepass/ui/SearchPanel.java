@@ -28,13 +28,14 @@ public class SearchPanel {
     private JPanel panel;
     private JTextField searchField;
     private JList groupsList;
-    private JButton searchButton;
     private JTable entriesTable;
     private JScrollPane tableScrollPane;
     private JMenu fileMenu;
     private JMenu settingsMenu;
     private JMenu createMenu;
     private JMenuBar menuBar;
+    private JMenu remoteMenu;
+    private JMenu helpMenu;
 
     private KeePassFile database = null;
     private String[] columnTableNames = {"Title", "UserName", "Password"};
@@ -51,9 +52,10 @@ public class SearchPanel {
         return panel;
     }
 
-    public void setDatabase(KeePassFile database) {
+    public void configureUI(KeePassFile database) {
         this.database = database;
         setGroupsList();
+        searchField.setText("");
         entriesTable.setModel(new DefaultTableModel(new String[][]{{" "}}, new String[]{})); //show empty table
         currentDisplayedData = null;
     }
@@ -151,20 +153,19 @@ public class SearchPanel {
             }
         });
 
-
-        Action searchEntries = new AbstractAction() {
+        searchField.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 searchForSpecificEntry(searchField.getText().toLowerCase());
             }
-        };
-        searchButton.addActionListener(searchEntries);
-        searchField.addActionListener(searchEntries);
+        });
     }
 
     private void createUIComponents() {
         fileMenu = Menu.getFileMenu();
         createMenu = Menu.getCreateMenu();
         settingsMenu = Menu.getSettingsMenu();
+        remoteMenu = Menu.getRemoteMenu();
+        helpMenu = Menu.getHelpMenu();
     }
 }

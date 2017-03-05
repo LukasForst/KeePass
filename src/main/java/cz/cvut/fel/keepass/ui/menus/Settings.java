@@ -16,4 +16,6 @@ public class Settings {
     JMenu getSettingsMenu() {
         return settingsMenu;
     }
+
+    // TODO - settings of the program
 }

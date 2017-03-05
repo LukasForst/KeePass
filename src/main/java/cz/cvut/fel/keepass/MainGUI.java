@@ -62,7 +62,7 @@ public class MainGUI {
         mainFrame.setSize(700, 700);
         mainFrame.setLocationRelativeTo(null);
 
-        searchPanel.setDatabase(DataUtils.getDatabase());
+        searchPanel.configureUI(DataUtils.getDatabase());
 
         mainFrame.setVisible(true);
     }

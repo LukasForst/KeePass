@@ -34,7 +34,7 @@ public class File {
             String il = "" + i;
             openRecentDatabaseMenu.add(new JMenuItem(il));
         }
-
+        // TODO - add recent records
         return openRecentDatabaseMenu;
     }
 
@@ -43,10 +43,13 @@ public class File {
         JMenuItem newDatabase = new JMenuItem("KeePass file");
         newFilesMenu.add(newDatabase);
 
+        // TODO - create new database
+
         return newFilesMenu;
     }
 
     private JMenuItem closeDatabase() {
+        /** closes current database and shows file screen*/
         JMenuItem close = new JMenuItem("Close database");
         close.addActionListener(new AbstractAction() {
             @Override
@@ -59,6 +62,7 @@ public class File {
     }
 
     private JMenuItem exitProgram() {
+        /** ends program */
         JMenuItem exitProgram = new JMenuItem("Exit");
         exitProgram.addActionListener(new AbstractAction() {
             @Override
@@ -71,6 +75,7 @@ public class File {
     }
 
     private JMenuItem openNewDatabase() {
+        /** opens new database */
         JMenuItem open = new JMenuItem("Open...");
         open.addActionListener(new AbstractAction() {
             @Override

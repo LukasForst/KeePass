@@ -22,4 +22,12 @@ public class Menu {
     public static JMenu getSettingsMenu() {
         return new Settings().getSettingsMenu();
     }
+
+    public static JMenu getRemoteMenu() {
+        return new Remote().getRemoteMenu();
+    }
+
+    public static JMenu getHelpMenu() {
+        return new Help().getHelpMenu();
+    }
 }
